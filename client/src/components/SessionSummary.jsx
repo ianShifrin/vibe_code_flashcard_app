@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-function SessionSummary({ total, correct, missedCards, onStudyMissed, onDone }) {
+function SessionSummary({ total, correct, missedCards, onStudyMissed, onGoAgain, onDone }) {
   return (
     <div>
       <h2>Session Complete</h2>
@@ -10,6 +10,7 @@ function SessionSummary({ total, correct, missedCards, onStudyMissed, onDone }) 
           Study Missed Cards
         </button>
       )}
+      <button onClick={onGoAgain}>Go Again</button>
       <button onClick={onDone}>Done</button>
     </div>
   );
@@ -26,6 +27,7 @@ SessionSummary.propTypes = {
     })
   ).isRequired,
   onStudyMissed: PropTypes.func.isRequired,
+  onGoAgain: PropTypes.func.isRequired,
   onDone: PropTypes.func.isRequired,
 };
 

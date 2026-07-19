@@ -12,6 +12,7 @@ describe('SessionSummary', () => {
         correct={2}
         missedCards={[]}
         onStudyMissed={vi.fn()}
+        onGoAgain={vi.fn()}
         onDone={vi.fn()}
       />
     );
@@ -25,6 +26,7 @@ describe('SessionSummary', () => {
         correct={3}
         missedCards={[]}
         onStudyMissed={vi.fn()}
+        onGoAgain={vi.fn()}
         onDone={vi.fn()}
       />
     );
@@ -40,6 +42,7 @@ describe('SessionSummary', () => {
         correct={2}
         missedCards={[missedCard]}
         onStudyMissed={vi.fn()}
+        onGoAgain={vi.fn()}
         onDone={vi.fn()}
       />
     );
@@ -56,6 +59,7 @@ describe('SessionSummary', () => {
         correct={2}
         missedCards={[missedCard]}
         onStudyMissed={onStudyMissed}
+        onGoAgain={vi.fn()}
         onDone={vi.fn()}
       />
     );
@@ -71,10 +75,41 @@ describe('SessionSummary', () => {
         correct={3}
         missedCards={[]}
         onStudyMissed={vi.fn()}
+        onGoAgain={vi.fn()}
         onDone={onDone}
       />
     );
     fireEvent.click(screen.getByRole('button', { name: /^done$/i }));
     expect(onDone).toHaveBeenCalledTimes(1);
+  });
+
+  it('always shows the "Go Again" button', () => {
+    render(
+      <SessionSummary
+        total={3}
+        correct={3}
+        missedCards={[]}
+        onStudyMissed={vi.fn()}
+        onGoAgain={vi.fn()}
+        onDone={vi.fn()}
+      />
+    );
+    expect(screen.getByRole('button', { name: /go again/i })).toBeInTheDocument();
+  });
+
+  it('calls onGoAgain when "Go Again" is clicked', () => {
+    const onGoAgain = vi.fn();
+    render(
+      <SessionSummary
+        total={3}
+        correct={2}
+        missedCards={[]}
+        onStudyMissed={vi.fn()}
+        onGoAgain={onGoAgain}
+        onDone={vi.fn()}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: /go again/i }));
+    expect(onGoAgain).toHaveBeenCalledTimes(1);
   });
 });
