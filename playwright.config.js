@@ -11,4 +11,5 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:5173',
   },
+  workers: 1,
 });
