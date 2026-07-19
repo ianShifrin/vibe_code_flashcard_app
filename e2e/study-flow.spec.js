@@ -70,4 +70,37 @@ test.describe('flashcard study flow', () => {
     await expect(page.getByText('What is a React prop?')).toBeVisible();
     await expect(page.getByText('1 / 1')).toBeVisible();
   });
+
+  test('restarts the full deck after clicking "Go Again"', async ({ page }) => {
+    await page.goto('/');
+
+    // Card 1 — correct
+    await page.getByRole('button', { name: /flip card/i }).click();
+    await page.getByRole('button', { name: /got it/i }).click();
+
+    // Card 2 — correct
+    await page.getByRole('button', { name: /flip card/i }).click();
+    await page.getByRole('button', { name: /got it/i }).click();
+
+    // Card 3 — missed
+    await page.getByRole('button', { name: /flip card/i }).click();
+    await page.getByRole('button', { name: /missed it/i }).click();
+
+    await expect(page.getByText('You got 2 out of 3 correct.')).toBeVisible();
+
+    await page.getByRole('button', { name: /go again/i }).click();
+
+    // Fresh session with the full deck of 3 again
+    await expect(page.getByText('1 / 3')).toBeVisible();
+
+    // Can complete this new session and reach a fresh summary
+    await page.getByRole('button', { name: /flip card/i }).click();
+    await page.getByRole('button', { name: /got it/i }).click();
+    await page.getByRole('button', { name: /flip card/i }).click();
+    await page.getByRole('button', { name: /got it/i }).click();
+    await page.getByRole('button', { name: /flip card/i }).click();
+    await page.getByRole('button', { name: /got it/i }).click();
+
+    await expect(page.getByText('You got 3 out of 3 correct.')).toBeVisible();
+  });
 });
