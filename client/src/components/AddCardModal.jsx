@@ -79,6 +79,7 @@ function AddCardModal({ isOpen, onClose, onSaved }) {
     }
     setIsSubmitting(true);
     setSubmitError(null);
+    let saved = false;
     try {
       const res = await fetch('/api/cards', {
         method: 'POST',
@@ -86,12 +87,13 @@ function AddCardModal({ isOpen, onClose, onSaved }) {
         body: JSON.stringify({ question, answer }),
       });
       if (!res.ok) throw new Error('Server error');
-      onSaved();
+      saved = true;
     } catch {
       setSubmitError('Failed to save card. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
+    if (saved) onSaved();
   }
 
   return (

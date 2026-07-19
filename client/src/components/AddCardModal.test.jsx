@@ -75,4 +75,23 @@ describe('AddCardModal', () => {
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(onClose).toHaveBeenCalledTimes(1);
   });
+
+  it('resets the form when the modal re-opens', () => {
+    const { rerender } = render(
+      <AddCardModal isOpen={true} onClose={vi.fn()} onSaved={vi.fn()} />
+    );
+    fireEvent.change(screen.getByLabelText('Question'), { target: { value: 'Old text' } });
+    rerender(<AddCardModal isOpen={false} onClose={vi.fn()} onSaved={vi.fn()} />);
+    rerender(<AddCardModal isOpen={true} onClose={vi.fn()} onSaved={vi.fn()} />);
+    expect(screen.getByLabelText('Question')).toHaveValue('');
+  });
+
+  it('shows a validation error when question exceeds 500 characters', () => {
+    render(<AddCardModal isOpen={true} onClose={vi.fn()} onSaved={vi.fn()} />);
+    fireEvent.change(screen.getByLabelText('Question'), {
+      target: { value: 'Q'.repeat(501) },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save/i }));
+    expect(screen.getByText('Question must be 500 characters or fewer.')).toBeInTheDocument();
+  });
 });
