@@ -98,4 +98,31 @@ describe('App', () => {
       expect(screen.getByText('What is JSX?')).toBeInTheDocument()
     );
   });
+
+  it('restarts with the full deck after "Go Again" is clicked', async () => {
+    const threeCards = [
+      { id: 1, question: 'Q1', answer: 'A1' },
+      { id: 2, question: 'Q2', answer: 'A2' },
+      { id: 3, question: 'Q3', answer: 'A3' },
+    ];
+    global.fetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(threeCards),
+    });
+    render(<App />);
+    await waitFor(() => screen.getByText('Q1'));
+
+    // Grade all three cards to reach the summary
+    for (let i = 0; i < 3; i++) {
+      fireEvent.click(screen.getByRole('button', { name: /flip card/i }));
+      fireEvent.click(screen.getByRole('button', { name: /got it/i }));
+    }
+
+    expect(screen.getByText('You got 3 out of 3 correct.')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /go again/i }));
+
+    // Back in a fresh study session with all 3 cards again
+    expect(screen.getByText('1 / 3')).toBeInTheDocument();
+  });
 });

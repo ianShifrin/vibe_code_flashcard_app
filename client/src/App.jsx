@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import StudySession from './components/StudySession.jsx';
 import AdminPage from './components/AdminPage.jsx';
+import shuffle from './utils/shuffle.js';
 
 function App() {
   const [status, setStatus] = useState('loading');
@@ -33,6 +34,11 @@ function App() {
 
   function handleStudyMissed(missedCards) {
     setActiveCards(missedCards);
+    setSessionKey(k => k + 1);
+  }
+
+  function handleGoAgain() {
+    setActiveCards(shuffle(cards));
     setSessionKey(k => k + 1);
   }
 
@@ -86,6 +92,7 @@ function App() {
           key={sessionKey}
           cards={activeCards}
           onStudyMissed={handleStudyMissed}
+          onGoAgain={handleGoAgain}
           onDone={handleDone}
         />
       )}
