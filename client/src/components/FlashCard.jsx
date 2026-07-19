@@ -6,7 +6,14 @@ function FlashCard({ question, answer, isFlipped, onFlip }) {
     <div
       className="flashcard"
       onClick={onFlip}
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onFlip();
+        }
+      }}
       role="button"
+      tabIndex={0}
       aria-label="Flip card"
     >
       <div className={`flashcard__inner${isFlipped ? ' flashcard__inner--flipped' : ''}`}>

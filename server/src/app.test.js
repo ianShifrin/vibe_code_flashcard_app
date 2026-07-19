@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
 import request from 'supertest';
 import app from './app.js';
-import { sequelize, seed } from './db.js';
+import { sequelize, seed, Card } from './db.js';
 
 describe('GET /api/ping', () => {
   it('responds with a pong message', async () => {
@@ -30,5 +30,16 @@ describe('GET /api/cards', () => {
     expect(typeof card.id).toBe('number');
     expect(typeof card.question).toBe('string');
     expect(typeof card.answer).toBe('string');
+  });
+});
+
+describe('GET /api/cards (error path)', () => {
+  it('returns 500 with error envelope when findAll throws', async () => {
+    vi.spyOn(Card, 'findAll').mockRejectedValueOnce(new Error('DB failure'));
+    const response = await request(app).get('/api/cards');
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({
+      error: { code: 'INTERNAL_ERROR', message: 'Failed to load cards.' },
+    });
   });
 });

@@ -36,4 +36,18 @@ describe('FlashCard', () => {
     const { container } = render(<FlashCard {...defaultProps} isFlipped={false} />);
     expect(container.querySelector('.flashcard__inner--flipped')).not.toBeInTheDocument();
   });
+
+  it('calls onFlip when Enter is pressed on the card', () => {
+    const onFlip = vi.fn();
+    render(<FlashCard {...defaultProps} onFlip={onFlip} />);
+    fireEvent.keyDown(screen.getByRole('button', { name: /flip card/i }), { key: 'Enter' });
+    expect(onFlip).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls onFlip when Space is pressed on the card', () => {
+    const onFlip = vi.fn();
+    render(<FlashCard {...defaultProps} onFlip={onFlip} />);
+    fireEvent.keyDown(screen.getByRole('button', { name: /flip card/i }), { key: ' ' });
+    expect(onFlip).toHaveBeenCalledTimes(1);
+  });
 });

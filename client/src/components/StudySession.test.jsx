@@ -48,4 +48,31 @@ describe('StudySession', () => {
     render(<StudySession cards={cards} onStudyMissed={vi.fn()} onDone={vi.fn()} />);
     expect(screen.getByText('1 / 2')).toBeInTheDocument();
   });
+
+  it('calls onStudyMissed with the missed cards when "Study Missed Cards" is clicked', () => {
+    const onStudyMissed = vi.fn();
+    render(<StudySession cards={cards} onStudyMissed={onStudyMissed} onDone={vi.fn()} />);
+    // Card 1 — missed
+    fireEvent.click(screen.getByRole('button', { name: /flip card/i }));
+    fireEvent.click(screen.getByRole('button', { name: /missed it/i }));
+    // Card 2 — correct
+    fireEvent.click(screen.getByRole('button', { name: /flip card/i }));
+    fireEvent.click(screen.getByRole('button', { name: /got it/i }));
+    // Summary is shown — click Study Missed Cards
+    fireEvent.click(screen.getByRole('button', { name: /study missed cards/i }));
+    expect(onStudyMissed).toHaveBeenCalledWith([cards[0]]);
+  });
+
+  it('calls onDone when "Done" is clicked on the summary screen', () => {
+    const onDone = vi.fn();
+    render(<StudySession cards={cards} onStudyMissed={vi.fn()} onDone={onDone} />);
+    // Grade all cards to reach summary
+    fireEvent.click(screen.getByRole('button', { name: /flip card/i }));
+    fireEvent.click(screen.getByRole('button', { name: /got it/i }));
+    fireEvent.click(screen.getByRole('button', { name: /flip card/i }));
+    fireEvent.click(screen.getByRole('button', { name: /got it/i }));
+    // Summary — click Done
+    fireEvent.click(screen.getByRole('button', { name: /^done$/i }));
+    expect(onDone).toHaveBeenCalledTimes(1);
+  });
 });

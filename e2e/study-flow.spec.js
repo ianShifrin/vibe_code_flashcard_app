@@ -1,6 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('flashcard study flow', () => {
+  test.beforeEach(async ({ request }) => {
+    await request.post('http://localhost:3001/api/test/reset');
+  });
+
   test('loads cards and shows the first question', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByText('What is JSX?')).toBeVisible();
