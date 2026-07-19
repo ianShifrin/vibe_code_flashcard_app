@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import FlashCard from './FlashCard.jsx';
 import SessionSummary from './SessionSummary.jsx';
 
-function StudySession({ cards, onStudyMissed, onDone }) {
+function StudySession({ cards, onStudyMissed, onGoAgain, onDone }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [graded, setGraded] = useState([]);
@@ -36,6 +36,7 @@ function StudySession({ cards, onStudyMissed, onDone }) {
         correct={correct}
         missedCards={missedCards}
         onStudyMissed={onStudyMissed}
+        onGoAgain={onGoAgain}
         onDone={onDone}
       />
     );
@@ -71,6 +72,7 @@ StudySession.propTypes = {
     })
   ).isRequired,
   onStudyMissed: PropTypes.func.isRequired,
+  onGoAgain: PropTypes.func.isRequired,
   onDone: PropTypes.func.isRequired,
 };
 
