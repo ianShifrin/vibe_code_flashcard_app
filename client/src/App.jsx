@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import StudySession from './components/StudySession.jsx';
+import AdminPage from './components/AdminPage.jsx';
 
 function App() {
   const [status, setStatus] = useState('loading');
+  const [cards, setCards] = useState([]);
   const [activeCards, setActiveCards] = useState([]);
-  // Incrementing this key forces StudySession to remount when studying missed cards
   const [sessionKey, setSessionKey] = useState(0);
+  const [view, setView] = useState('study');
 
-  useEffect(() => {
+  const fetchCards = useCallback(() => {
     fetch('/api/cards')
       .then(res => {
         if (!res.ok) throw new Error('Server error');
@@ -17,12 +19,17 @@ function App() {
         if (data.length === 0) {
           setStatus('empty');
         } else {
+          setCards(data);
           setActiveCards(data);
           setStatus('ready');
         }
       })
       .catch(() => setStatus('error'));
   }, []);
+
+  useEffect(() => {
+    fetchCards();
+  }, [fetchCards]);
 
   function handleStudyMissed(missedCards) {
     setActiveCards(missedCards);
@@ -33,6 +40,15 @@ function App() {
     setStatus('done');
   }
 
+  function handleCardsChanged() {
+    setSessionKey(k => k + 1);
+    fetchCards();
+  }
+
+  function toggleView() {
+    setView(v => (v === 'study' ? 'admin' : 'study'));
+  }
+
   if (status === 'loading') {
     return <main><p>Loading...</p></main>;
   }
@@ -41,23 +57,38 @@ function App() {
     return <main><p>Failed to load cards. Please try again.</p></main>;
   }
 
-  if (status === 'empty') {
-    return <main><p>No cards found.</p></main>;
-  }
-
   if (status === 'done') {
     return <main><h1>Flashcard App</h1><p>Good work!</p></main>;
+  }
+
+  if (status === 'empty') {
+    return (
+      <main>
+        <h1>Flashcard App</h1>
+        <button onClick={toggleView}>{view === 'study' ? 'Admin' : 'Study'}</button>
+        {view === 'admin' ? (
+          <AdminPage cards={cards} onCardsChanged={handleCardsChanged} />
+        ) : (
+          <p>No cards found.</p>
+        )}
+      </main>
+    );
   }
 
   return (
     <main>
       <h1>Flashcard App</h1>
-      <StudySession
-        key={sessionKey}
-        cards={activeCards}
-        onStudyMissed={handleStudyMissed}
-        onDone={handleDone}
-      />
+      <button onClick={toggleView}>{view === 'study' ? 'Admin' : 'Study'}</button>
+      {view === 'admin' ? (
+        <AdminPage cards={cards} onCardsChanged={handleCardsChanged} />
+      ) : (
+        <StudySession
+          key={sessionKey}
+          cards={activeCards}
+          onStudyMissed={handleStudyMissed}
+          onDone={handleDone}
+        />
+      )}
     </main>
   );
 }

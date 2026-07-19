@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import App from './App.jsx';
 
 const mockCards = [
@@ -60,6 +60,42 @@ describe('App', () => {
       expect(
         screen.getByText('Failed to load cards. Please try again.')
       ).toBeInTheDocument()
+    );
+  });
+
+  it('renders an "Admin" toggle button when cards are loaded', async () => {
+    global.fetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockCards),
+    });
+    render(<App />);
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: /admin/i })).toBeInTheDocument()
+    );
+  });
+
+  it('switches to admin view when the toggle button is clicked', async () => {
+    global.fetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockCards),
+    });
+    render(<App />);
+    await waitFor(() => screen.getByRole('button', { name: /admin/i }));
+    fireEvent.click(screen.getByRole('button', { name: /admin/i }));
+    expect(screen.getByRole('button', { name: /add card/i })).toBeInTheDocument();
+  });
+
+  it('switches back to study view when the toggle is clicked again', async () => {
+    global.fetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockCards),
+    });
+    render(<App />);
+    await waitFor(() => screen.getByRole('button', { name: /admin/i }));
+    fireEvent.click(screen.getByRole('button', { name: /admin/i }));
+    fireEvent.click(screen.getByRole('button', { name: /study/i }));
+    await waitFor(() =>
+      expect(screen.getByText('What is JSX?')).toBeInTheDocument()
     );
   });
 });
