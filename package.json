@@ -23,5 +23,8 @@
   },
   "lint-staged": {
     "**/*.{js,jsx}": "eslint --fix"
+  },
+  "allowScripts": {
+    "sqlite3@6.0.1": true
   }
 }
