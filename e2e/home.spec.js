@@ -1,4 +1,3 @@
-// e2e/home.spec.js
 import { test, expect } from '@playwright/test';
 
 test('home page shows the app heading', async ({ page }) => {
