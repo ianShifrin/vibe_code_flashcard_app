@@ -2,38 +2,24 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Stack
+## Project status
 
-[One-sentence description of your app — what it does and who it's for.]
-React + Vite frontend, Express backend (Node ESM). [Database: e.g. SQLite via Sequelize ORM — or remove if not added yet.]
+This is an npm-workspace full-stack scaffold: a Vite + React client and an Express (ESM) server, with Playwright e2e tests at the root. No flashcard features are implemented yet — this is scaffolding only.
 
 ## Commands
 
-```sh
-npm run dev          # start both server (port 3001) and client (port 5173) concurrently
-npm run dev -w server  # server only
-npm run dev -w client  # client only
-```
+- `npm run dev` — runs the client (Vite, port 5173) and server (Express, port 3001) concurrently
+- `npm run lint` — runs ESLint across the whole repo
+- `npm run test --workspace=client` — runs client unit tests (Vitest + Testing Library)
+- `npm run test --workspace=server` — runs server unit tests (Vitest + supertest)
+- `npm run test:e2e` — runs Playwright e2e tests (boots `npm run dev` automatically)
+- To run a single test file: `npm run test --workspace=client -- src/App.test.jsx` (or the equivalent path under `server/`)
 
-## Structure
+## Architecture
 
-```
-client/        Vite + React frontend
-server/        Express API
-  src/app.js   Route handlers
-  src/index.js Entry point
-  [src/db.js   Sequelize instance + model definitions — add when DB is wired up]
-  [src/seed.js Idempotent seed function — add when DB is wired up]
-```
-
-## API routes
-
-| Method | Path      | Description  |
-| ------ | --------- | ------------ |
-| GET    | /api/ping | health check |
-| [...]  | [...]     | [...]        |
-
-The Vite dev server proxies `/api/*` to `http://localhost:3001`.
+- `client/` — Vite + React (JS/JSX). `src/main.jsx` mounts `src/App.jsx`. `vite.config.js` proxies `/api/*` to the server on port 3001 and configures Vitest.
+- `server/` — Express, Node ESM. `src/app.js` builds and exports the Express app (routes live here); `src/index.js` imports it and calls `.listen()`. First route: `GET /api/ping`.
+- `e2e/` — Playwright tests driving the client through a real browser; `playwright.config.js` at the repo root boots `npm run dev` as its web server.
 
 ## DO NOT MODIFY THIS SECTION WITHOUT ASKING ME
 
