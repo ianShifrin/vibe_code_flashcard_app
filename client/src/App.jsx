@@ -16,10 +16,10 @@ function App() {
         return res.json();
       })
       .then(data => {
+        setCards(data);
         if (data.length === 0) {
           setStatus('empty');
         } else {
-          setCards(data);
           setActiveCards(data);
           setStatus('ready');
         }
